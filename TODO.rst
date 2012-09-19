@@ -28,6 +28,9 @@ In list_algos_tests.c:
 * Find a way to simulate filling different sized random lists and measuring how long each sort algorithm takes
 
 
+In darry.c:
+===========
 
+* better expand and contract?
 
 
