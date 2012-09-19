@@ -40,47 +40,47 @@ int List_bubble_sort(List *list, List_compare cmp)
 
 List *List_merge(List *list1, List *list2, List_compare cmp)
 {
-	// TODO: 考虑有相同元素的情况
 	List *result = List_create(); // 存放排序好的List
 
-	// 分别指向两个List
-	ListNode *cur1 = list1->first;
-	ListNode *cur2 = list2->first;
+	// 数据域
+	void *val = NULL;
 
-	// 如果list1的数据小，则push之，并将list1的指针向前移动
-	// 否则，push list2的数据，并将list2的指针向前移动
-	while(cur1 != NULL && cur2 != NULL)
+	// 如果list1的数据小，则push之，并unshift list1
+	// 否则，push list2的数据，并unshift list2
+	while(List_count(list1) > 0  && List_count(list2) > 0)
 	{
-		if(cmp((char *)cur1->value , (char *)cur2->value) > 0)
+		if(cmp((char *)List_first(list1) , (char *)List_first(list2)) >= 0)
 		{
-			List_push(result, cur2->value);
-			cur2=cur2->next;
+			val = List_unshift(list2);
+			List_push(result, val);
 		}
 		else
 		{
-			List_push(result, cur1->value);
-			cur1=cur1->next;
+			val = List_unshift(list1);
+			List_push(result, val);
 		}
 	}
 
 	// push剩余的数据
-	if(cur1 == NULL)
+	if(List_count(list1) > 0)
 	{
-		while(cur2 != NULL)
+		while(List_count(list1) > 0)
 		{
-			List_push(result, cur2->value);
-			cur2=cur2->next;
+			val =List_unshift(list1);
+			List_push(result, val);
 		}
 	}
 	else
 	{
-		while(cur1 != NULL)
+		while(List_count(list2) > 0)
 		{
-			List_push(result, cur1->value);
-			cur1=cur1->next;
+			val =List_unshift(list2);
+			List_push(result, val);
 		}
 	
 	}
+	List_destroy(list1);
+	List_destroy(list2);
 	return result;
 	
 }
@@ -109,11 +109,14 @@ List *List_merge_sort(List *list, List_compare cmp)
 		cur=cur->next;
 	}
 
-	List_merge_sort(left, cmp);
-	List_merge_sort(right, cmp);
+	List *sort_left = List_merge_sort(left, cmp);
+	List *sort_right =	List_merge_sort(right, cmp);
+
+	if(sort_left != left) List_destroy(left);
+	if(sort_right != right) List_destroy(right);
 	
 
 	// merge
-	return List_merge(left, right, cmp);
+	return List_merge(sort_left, sort_right, cmp);
 
 }
